@@ -1,30 +1,8 @@
 const { User } = require("../models");
-const { generateToken } = require("../helpers/jwt");
-const bcrypt = require("bcrypt");
+const { generateToken } = require("../helper/jwt");
 
-module.exports = {
-  async register(req, res, next) {
-    try {
-      const { username, password } = req.body;
-
-      if (!username || !password) {
-        throw {
-          name: "BadRequest",
-          message: "Username and password are required",
-        };
-      }
-
-      const user = await User.create({ username, password });
-      res.status(201).json({
-        message: "User registered successfully",
-        username: user.username,
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
-
-  async login(req, res, next) {
+class UserController {
+  static async login(req, res, next) {
     try {
       const { username, password } = req.body;
 
@@ -46,5 +24,28 @@ module.exports = {
     } catch (err) {
       next(err);
     }
-  },
-};
+  }
+
+  static async register(req, res, next) {
+    try {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        throw {
+          name: "BadRequest",
+          message: "Username and password are required",
+        };
+      }
+
+      const user = await User.create({ username, password });
+      res.status(201).json({
+        message: "User registered successfully",
+        username: user.username,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+}
+
+module.exports = UserController;

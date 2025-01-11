@@ -7,11 +7,11 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static async hashPassword(password) {
-      return bcrypt.hash(password, 10);
+      return bcryptjs.hash(password, 10);
     }
 
     async validatePassword(password) {
-      return bcrypt.compare(password, this.password);
+      return bcryptjs.compare(password, this.password);
     }
   }
   User.init(
