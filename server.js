@@ -11,7 +11,9 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Crypto Wallet Backend is running!");
