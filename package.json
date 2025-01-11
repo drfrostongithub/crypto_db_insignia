@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand --verbose --detectOpenHandles --forceExit",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "sequelize": "node -r dotenv/config node_modules/.bin/sequelize"
   },
   "keywords": [],
   "author": "",

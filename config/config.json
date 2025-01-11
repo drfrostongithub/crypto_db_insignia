@@ -1,9 +1,0 @@
-{
-  "development": {
-    "username": "postgres",
-    "password": "putra021825",
-    "database": "crypto_insignia_db",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
-  }
-}

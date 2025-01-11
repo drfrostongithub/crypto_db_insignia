@@ -1,17 +1,20 @@
-if (
-  process.env.NODE_ENV == "development" ||
-  process.env.NODE_ENV == "production"
-) {
-  require(`dotenv`).config();
-}
+// if (
+//   process.env.NODE_ENV == "development" ||
+//   process.env.NODE_ENV == "production"
+// ) {
+//   require(`dotenv`).config();
+// }
 
-const express = require("express");
-const bodyParser = require("body-parser");
+require(`dotenv`).config();
+
+const express = require(`express`);
 
 const app = express();
+const cors = require("cors");
 const PORT = process.env.PORT || 3000;
 
-// app.use(bodyParser.json());
+//use cors here
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
