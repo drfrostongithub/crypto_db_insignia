@@ -4,10 +4,11 @@ const { Op } = require("sequelize");
 module.exports = {
   async createWallet(req, res, next) {
     try {
+      console.log(req, "jalan");
       const { id: userId } = req.decodedUser;
 
       const existingWallet = await Wallet.findOne({
-        where: { UserId: userId },
+        where: { userId: userId },
       });
       if (existingWallet) {
         throw {
@@ -16,7 +17,7 @@ module.exports = {
         };
       }
 
-      const wallet = await Wallet.create({ UserId: userId, amount: 0 });
+      const wallet = await Wallet.create({ userId: userId, amount: 0 });
       res.status(201).json({ message: "Wallet created successfully", wallet });
     } catch (err) {
       next(err);
@@ -27,7 +28,7 @@ module.exports = {
     try {
       const { id: userId } = req.decodedUser;
 
-      const wallet = await Wallet.findOne({ where: { UserId: userId } });
+      const wallet = await Wallet.findOne({ where: { userId: userId } });
       if (!wallet) {
         throw { name: "NotFound", message: "Wallet not found" };
       }
@@ -47,7 +48,7 @@ module.exports = {
         throw { name: "BadRequest", message: "Invalid deposit amount" };
       }
 
-      const wallet = await Wallet.findOne({ where: { UserId: userId } });
+      const wallet = await Wallet.findOne({ where: { userId: userId } });
       if (!wallet) {
         throw { name: "NotFound", message: "Wallet not found" };
       }
@@ -72,9 +73,9 @@ module.exports = {
         throw { name: "BadRequest", message: "Invalid transfer details" };
       }
 
-      const senderWallet = await Wallet.findOne({ where: { UserId: userId } });
+      const senderWallet = await Wallet.findOne({ where: { userId: userId } });
       const recipientWallet = await Wallet.findOne({
-        where: { UserId: recipientId },
+        where: { userId: recipientId },
       });
 
       if (!senderWallet || !recipientWallet) {
