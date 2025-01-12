@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const authentication = require("../middlewares/authentication");
-const walletController = require("../controllers/walletController");
 const userController = require("../controllers/userController");
-
 const Controller = require(`../controllers/controller`);
+const walletRoutes = require("./walletRoutes");
 
 router.get(`/`, Controller.home);
 
@@ -14,8 +13,6 @@ router.post("/users/login", userController.login);
 
 // Protected routes
 router.use(authentication);
-// router.get("/wallet", walletController.getWallet);
-// router.post("/wallet/deposit", walletController.deposit);
-// router.post("/wallet/transfer", walletController.transfer);
+router.use("/wallet", walletRoutes);
 
 module.exports = router;

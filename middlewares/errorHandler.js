@@ -9,7 +9,10 @@ function errorHandler(err, req, res, next) {
     message = err.errors.map((e) => e.message).join(", ");
   } else if (err.name === "SequelizeDatabaseError") {
     status = 400;
-    message = "Database Error: " + err.parent?.detail || "Invalid query";
+    message =
+      "Database Error: " +
+        (err.parent?.detail ? err.parent.detail : "User doesn't exist") ||
+      "Invalid query";
   }
 
   // Custom Errors
