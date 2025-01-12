@@ -5,6 +5,14 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       User.hasOne(models.Wallet, { foreignKey: "userId", as: "wallet" });
+      User.hasMany(models.Transaction, {
+        as: "SentTransactions",
+        foreignKey: "senderId",
+      });
+      User.hasMany(models.Transaction, {
+        as: "ReceivedTransactions",
+        foreignKey: "recipientId",
+      });
     }
 
     static async hashPassword(password) {

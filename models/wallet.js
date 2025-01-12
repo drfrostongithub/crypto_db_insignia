@@ -9,6 +9,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Wallet.belongsTo(models.User, { foreignKey: "userId", as: "user" });
+      Wallet.hasMany(models.Transaction, {
+        as: "SentTransactions",
+        foreignKey: "senderId",
+      });
+      Wallet.hasMany(models.Transaction, {
+        as: "ReceivedTransactions",
+        foreignKey: "recipientId",
+      });
     }
   }
   Wallet.init(
