@@ -11,9 +11,22 @@ const express = require("express");
 const cors = require("cors");
 const errorHandler = require("./middlewares/errorHandler");
 const routes = require("./routes");
+const config = require("./config/config");
+const Sequelize = require("sequelize");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// if (config.use_env_variable) {
+//   var sequelize = new Sequelize(process.env[config.use_env_variable]);
+// } else {
+//   var sequelize = new Sequelize(
+//     config.database,
+//     config.username,
+//     config.password,
+//     config
+//   );
+// }
 
 // Middleware
 app.use(cors());
