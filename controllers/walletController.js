@@ -1,4 +1,4 @@
-const { Wallet, User, Transaction } = require("../models");
+const { Wallet, User, Transaction, sequelize } = require("../models");
 const { Op } = require("sequelize");
 
 module.exports = {
@@ -53,7 +53,7 @@ module.exports = {
         throw { name: "NotFound", message: "Wallet not found" };
       }
 
-      wallet.amount += amount;
+      wallet.amount += parseInt(amount);
       await wallet.save();
 
       res
@@ -65,6 +65,7 @@ module.exports = {
   },
 
   async transfer(req, res, next) {
+    const sequelizeTransaction = await sequelize.transaction();
     try {
       const { id: userId } = req.decodedUser;
       const { recipientId, amount } = req.body;
@@ -73,11 +74,11 @@ module.exports = {
         throw { name: "BadRequest", message: "Invalid transfer details" };
       }
 
-      const senderWallet = await Wallet.findOne({ where: { userId: userId } });
+      const senderWallet = await Wallet.findOne({ where: { userId: +userId } });
       const recipientWallet = await Wallet.findOne({
-        where: { userId: recipientId },
+        where: { userId: +recipientId },
       });
-
+      // console.log(senderWallet, recipientWallet);
       if (!senderWallet || !recipientWallet) {
         throw { name: "NotFound", message: "Wallet not found" };
       }
@@ -86,20 +87,37 @@ module.exports = {
         throw { name: "BadRequest", message: "Insufficient balance" };
       }
 
-      senderWallet.amount -= amount;
-      recipientWallet.amount += amount;
+      senderWallet.amount -= parseInt(amount);
+      recipientWallet.amount += parseInt(amount);
 
-      await senderWallet.save();
-      await recipientWallet.save();
+      await senderWallet.save({ transaction: sequelizeTransaction });
+      await recipientWallet.save({ transaction: sequelizeTransaction });
 
-      await Transaction.create({
-        senderId: userId,
-        recipientId,
-        amount,
+      // Create the transaction record within the same transaction
+      const senderUser = await User.findByPk(+userId, {
+        transaction: sequelizeTransaction,
       });
+      const recipientUser = await User.findByPk(+recipientId, {
+        transaction: sequelizeTransaction,
+      });
+      console.log(recipientUser, senderUser);
+      await Transaction.create(
+        {
+          senderId: +userId,
+          recipientId: +recipientId,
+          amount,
+          senderName: senderUser.username,
+          recipientName: recipientUser.username,
+        },
+        { transaction: sequelizeTransaction }
+      );
+
+      // Commit the transaction
+      await sequelizeTransaction.commit();
 
       res.status(200).json({ message: "Transfer successful" });
     } catch (err) {
+      await sequelizeTransaction.rollback();
       next(err);
     }
   },

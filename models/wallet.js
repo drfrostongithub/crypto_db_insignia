@@ -11,11 +11,11 @@ module.exports = (sequelize, DataTypes) => {
       Wallet.belongsTo(models.User, { foreignKey: "userId", as: "user" });
       Wallet.hasMany(models.Transaction, {
         as: "SentTransactions",
-        foreignKey: "senderUserId",
+        foreignKey: "senderId",
       });
       Wallet.hasMany(models.Transaction, {
         as: "ReceivedTransactions",
-        foreignKey: "recipientUserId",
+        foreignKey: "recipientId",
       });
     }
   }

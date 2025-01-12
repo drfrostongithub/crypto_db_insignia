@@ -7,11 +7,11 @@ module.exports = (sequelize, DataTypes) => {
       User.hasOne(models.Wallet, { foreignKey: "userId", as: "wallet" });
       User.hasMany(models.Transaction, {
         as: "SentTransactions",
-        foreignKey: "senderUserId",
+        foreignKey: "senderId",
       });
       User.hasMany(models.Transaction, {
         as: "ReceivedTransactions",
-        foreignKey: "recipientUserId",
+        foreignKey: "recipientId",
       });
     }
 

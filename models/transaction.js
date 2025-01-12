@@ -56,6 +56,14 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      senderName: {
+        type: DataTypes.STRING, // Add this field
+        allowNull: false,
+      },
+      recipientName: {
+        type: DataTypes.STRING, // Add this field
+        allowNull: false,
+      },
     },
     {
       sequelize,
