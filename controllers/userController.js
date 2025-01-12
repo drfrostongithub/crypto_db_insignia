@@ -29,7 +29,6 @@ class UserController {
   static async register(req, res, next) {
     try {
       const { username, password } = req.body;
-
       if (!username || !password) {
         throw {
           name: "BadRequest",

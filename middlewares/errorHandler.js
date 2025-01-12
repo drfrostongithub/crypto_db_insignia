@@ -1,4 +1,5 @@
 function errorHandler(err, req, res, next) {
+  // console.log(`Error Middlewares!`, err);
   // Sequelize Errors
   if (err.name === "SequelizeValidationError") {
     status = 400;
