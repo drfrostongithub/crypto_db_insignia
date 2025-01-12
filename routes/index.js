@@ -13,6 +13,6 @@ router.post("/users/login", userController.login);
 
 // Protected routes
 router.use(authentication);
-router.use("/wallet", walletRoutes);
+router.use("/wallets", walletRoutes);
 
 module.exports = router;

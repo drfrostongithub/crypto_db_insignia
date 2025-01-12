@@ -12,13 +12,13 @@ async function authentication(req, res, next) {
     const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
 
     // Find user by username (or adjust to another unique identifier)
-    const user = await User.findOne({ where: { username: decoded.username } });
+    const user = await User.findByPk(decoded.id);
     if (!user) {
-      throw { name: "Unauthorized", message: "Invalid token" };
+      throw { name: "Unauthorized", message: "Invalid user" };
     }
 
     // Attach user info to the request object for downstream use
-    req.decodedUser = { id: user.id, username: user.username };
+    req.decodedUser = decoded;
     next();
   } catch (err) {
     next({

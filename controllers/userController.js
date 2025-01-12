@@ -39,11 +39,9 @@ class UserController {
 
       // Create User
       const user = await User.create({ username, password }, { transaction });
-      // console.log("User created:", user.id);
 
       // Create wallet for the user
       await Wallet.create({ userId: user.id, amount: 0 }, { transaction });
-      console.log("Wallet created for User ID:", user.id);
 
       // Commit the transaction
       await transaction.commit();
