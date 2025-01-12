@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const walletController = require("../controllers/walletController");
-const authentication = require("../middlewares/authentication");
 
 // Apply authentication to wallet routes
-router.use(authentication);
+
 // Wallet operations
 // router.post("/create", walletController.createWallet);
 router.get("/balance", walletController.getBalance);
