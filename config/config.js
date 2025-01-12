@@ -6,7 +6,7 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     host: process.env.DB_HOST,
-    dialect: process.env.DB_DIALECT,
+    dialect: postgres,
     url: process.env.DATABASE_URL,
   },
   development: {
@@ -14,7 +14,7 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     host: process.env.DB_HOST,
-    dialect: process.env.DB_DIALECT,
+    dialect: postgres,
     url: process.env.DATABASE_URL,
   },
   test: {
@@ -22,7 +22,7 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     host: process.env.DB_HOST,
-    dialect: process.env.DB_DIALECT,
+    dialect: postgres,
     url: process.env.TEST_DATABASE_URL,
   },
   production: {
@@ -30,7 +30,7 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     host: process.env.DB_HOST,
-    dialect: process.env.DB_DIALECT,
+    dialect: postgres,
     url: process.env.PRODUCTION_DATABASE_URL,
   },
 };
