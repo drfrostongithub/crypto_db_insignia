@@ -36,7 +36,12 @@ class UserController {
         };
       }
 
+      // Create User
       const user = await User.create({ username, password });
+
+      // Create wallet for the user
+      await Wallet.create({ UserId: user.id, amount: 0 });
+
       res.status(201).json({
         message: "User registered successfully",
         username: user.username,
