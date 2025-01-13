@@ -29,7 +29,7 @@ const PORT = process.env.PORT || 3000;
 //   );
 // }
 
-sequelize.sync();
+// sequelize.sync();
 
 // console.log(config[process.env.NODE_ENV]);
 
