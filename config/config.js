@@ -24,6 +24,6 @@ module.exports = {
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
     // url: process.env.PRODUCTION_DATABASE_URL,
-    use_env_variable: "JAWSDB_URL",
+    // use_env_variable: "JAWSDB_URL",
   },
 };
