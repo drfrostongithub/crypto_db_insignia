@@ -1,21 +1,13 @@
 require("dotenv").config();
 
 module.exports = {
-  local: {
-    username: "postgres",
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    host: "127.0.0.1",
-    dialect: "postgres",
-    url: process.env.DATABASE_URL,
-  },
   development: {
     username: "postgres",
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     host: "127.0.0.1",
     dialect: "postgres",
-    url: process.env.DATABASE_URL,
+    url: "//postgres:putra021825@localhost:5432/crypto_insignia_db",
   },
   test: {
     username: "postgres",
