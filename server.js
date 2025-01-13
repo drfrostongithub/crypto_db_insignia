@@ -18,16 +18,16 @@ const { sequelize } = require("./models");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-if (process.env.NODE_ENV) {
-  var sequelize = new Sequelize(config[process.env.NODE_ENV]);
-} else {
-  var sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config
-  );
-}
+// if (process.env.NODE_ENV) {
+//   var sequelize = new Sequelize(config[process.env.NODE_ENV]);
+// } else {
+//   var sequelize = new Sequelize(
+//     config.database,
+//     config.username,
+//     config.password,
+//     config
+//   );
+// }
 
 // sequelize.sync();
 
