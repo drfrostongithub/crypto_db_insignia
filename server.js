@@ -13,6 +13,7 @@ const errorHandler = require("./middlewares/errorHandler");
 const routes = require("./routes");
 const config = require("./config/config");
 const Sequelize = require("sequelize");
+const { sequelize } = require("./models");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,8 @@ const PORT = process.env.PORT || 3000;
 //     config
 //   );
 // }
+
+sequelize.sync();
 
 // console.log(config[process.env.NODE_ENV]);
 
