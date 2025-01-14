@@ -74,6 +74,14 @@ module.exports = {
         throw { name: "BadRequest", message: "Invalid transfer details" };
       }
 
+      // Ensure the recipient is not the sender
+      if (recipientId === userId) {
+        throw {
+          name: "BadRequest",
+          message: "Cannot transfer to your own account",
+        };
+      }
+
       const senderWallet = await Wallet.findOne({ where: { userId: +userId } });
       const recipientWallet = await Wallet.findOne({
         where: { userId: +recipientId },
@@ -143,30 +151,29 @@ module.exports = {
 
   async listTopUsers(req, res, next) {
     try {
-      const users = await Transaction.findAll({
-        attributes: [
-          "senderId",
-          [
-            Transaction.sequelize.fn(
-              "SUM",
-              Transaction.sequelize.col("amount")
-            ),
-            "totalAmount",
-          ],
+      const { id: userId } = req.decodedUser;
+
+      const transactions = await Transaction.findAll({
+        where: {
+          [Op.or]: [{ senderId: userId }, { recipientId: userId }],
+        },
+        attributes: ["id", "senderId", "recipientId", "amount", "createdAt"],
+        include: [
+          {
+            model: User,
+            as: "Sender",
+            attributes: ["id", "username"],
+          },
+          {
+            model: User,
+            as: "Recipient",
+            attributes: ["id", "username"],
+          },
         ],
-        group: ["senderId"],
-        order: [
-          [
-            Transaction.sequelize.fn(
-              "SUM",
-              Transaction.sequelize.col("amount")
-            ),
-            "DESC",
-          ],
-        ],
+        order: [["amount", "DESC"]], // Order by amount in descending order
       });
 
-      res.status(200).json({ users });
+      res.status(200).json({ transactions });
     } catch (err) {
       next(err);
     }
