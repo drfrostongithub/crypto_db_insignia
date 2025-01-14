@@ -1,5 +1,5 @@
 const { Wallet, User, Transaction, sequelize } = require("../models");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 
 module.exports = {
   async createWallet(req, res, next) {
@@ -68,27 +68,36 @@ module.exports = {
     const sequelizeTransaction = await sequelize.transaction();
     try {
       const { id: userId } = req.decodedUser;
-      const { recipientId, amount } = req.body;
+      const { to_username, amount } = req.body;
 
-      if (!recipientId || !amount || amount <= 0) {
+      if (!to_username || !amount || amount <= 0) {
         throw { name: "BadRequest", message: "Invalid transfer details" };
       }
 
+      const senderWallet = await Wallet.findOne({ where: { userId: +userId } });
+      const recipientUser = await User.findOne({
+        where: { username: to_username },
+      });
+
+      if (!senderWallet || !recipientUser) {
+        throw { name: "NotFound", message: "Sender or recipient not found" };
+      }
+
       // Ensure the recipient is not the sender
-      if (recipientId === userId) {
+      const senderUser = await User.findByPk(+userId);
+      if (recipientUser.username === senderUser.username) {
         throw {
           name: "BadRequest",
           message: "Cannot transfer to your own account",
         };
       }
 
-      const senderWallet = await Wallet.findOne({ where: { userId: +userId } });
       const recipientWallet = await Wallet.findOne({
-        where: { userId: +recipientId },
+        where: { userId: recipientUser.id },
       });
-      // console.log(senderWallet, recipientWallet);
-      if (!senderWallet || !recipientWallet) {
-        throw { name: "NotFound", message: "Wallet not found" };
+
+      if (!recipientWallet) {
+        throw { name: "NotFound", message: "Recipient wallet not found" };
       }
 
       if (senderWallet.amount < amount) {
@@ -102,19 +111,13 @@ module.exports = {
       await recipientWallet.save({ transaction: sequelizeTransaction });
 
       // Create the transaction record within the same transaction
-      const senderUser = await User.findByPk(+userId, {
-        transaction: sequelizeTransaction,
-      });
-      const recipientUser = await User.findByPk(+recipientId, {
-        transaction: sequelizeTransaction,
-      });
       await Transaction.create(
         {
           senderId: +userId,
-          recipientId: +recipientId,
+          recipientId: recipientUser.id,
           amount,
           senderName: senderUser.username,
-          recipientName: recipientUser.username,
+          recipientName: to_username,
         },
         { transaction: sequelizeTransaction }
       );
@@ -129,29 +132,44 @@ module.exports = {
     }
   },
 
-  async listTopTransactions(req, res, next) {
+  async listTopUsers(req, res, next) {
     try {
       const { id: userId } = req.decodedUser;
-      const { n } = req.params;
-
-      const transactions = await Transaction.findAll({
+      const topUsers = await Transaction.findAll({
         where: {
-          [Op.or]: [{ senderId: userId }, { recipientId: userId }],
+          senderId: userId, // Only consider outbound transfers
         },
-        order: [["amount", "DESC"]],
-        limit: parseInt(n, 10),
+        attributes: [
+          "recipientId", // Group by recipient
+          [sequelize.fn("SUM", sequelize.col("amount")), "totalTransferValue"], // Sum of transfer values
+        ],
+        group: ["recipientId"], // Group by recipientId to aggregate values
+        order: [[sequelize.literal("totalTransferValue"), "DESC"]], // Order by totalTransferValue
+        limit: 10, // Limit to top 10 users
+        include: [
+          {
+            model: User,
+            as: "Recipient",
+            attributes: ["id", "username"], // Include recipient details
+          },
+        ],
       });
+      console.log(topUsers);
 
-      res.status(200).json({ transactions });
+      res.status(200).json({ topUsers });
     } catch (err) {
       next(err);
     }
   },
 
-  async listTopUsers(req, res, next) {
+  async listTopTransactionsByUser(req, res, next) {
     try {
       const { id: userId } = req.decodedUser;
+      const { page = 1, limit = 10 } = req.query;
 
+      const offset = (page - 1) * limit;
+
+      // Fetch transactions with pagination and apply transformations
       const transactions = await Transaction.findAll({
         where: {
           [Op.or]: [{ senderId: userId }, { recipientId: userId }],
@@ -169,10 +187,35 @@ module.exports = {
             attributes: ["id", "username"],
           },
         ],
-        order: [["amount", "DESC"]], // Order by amount in descending order
+        order: [[Sequelize.literal('ABS("amount")'), "DESC"]], // Sort by absolute value of amount
+        limit: parseInt(limit),
+        offset: parseInt(offset),
       });
 
-      res.status(200).json({ transactions });
+      // Transform transactions to set debit amounts as negative
+      const transformedTransactions = transactions.map((transaction) => ({
+        ...transaction.toJSON(),
+        amount:
+          transaction.senderId === userId
+            ? -transaction.amount
+            : transaction.amount,
+      }));
+
+      // Count total transactions for pagination
+      const totalTransactions = await Transaction.count({
+        where: {
+          [Op.or]: [{ senderId: userId }, { recipientId: userId }],
+        },
+      });
+
+      const totalPages = Math.ceil(totalTransactions / limit);
+
+      res.status(200).json({
+        transactions: transformedTransactions,
+        totalPages,
+        currentPage: parseInt(page),
+        totalTransactions,
+      });
     } catch (err) {
       next(err);
     }

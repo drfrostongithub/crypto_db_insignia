@@ -9,7 +9,10 @@ const walletController = require("../controllers/walletController");
 router.get("/balance", walletController.getBalance);
 router.post("/deposit", walletController.deposit);
 router.post("/transfer", walletController.transfer);
-router.get("/transactions/top/:n", walletController.listTopTransactions);
-router.get("/transactions/users/top", walletController.listTopUsers);
+router.get(
+  "/transactions/user/top",
+  walletController.listTopTransactionsByUser
+);
+router.get("/transactions/top", walletController.listTopUsers);
 
 module.exports = router;
