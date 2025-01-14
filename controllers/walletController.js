@@ -108,7 +108,6 @@ module.exports = {
       const recipientUser = await User.findByPk(+recipientId, {
         transaction: sequelizeTransaction,
       });
-      console.log(recipientUser, senderUser);
       await Transaction.create(
         {
           senderId: +userId,
