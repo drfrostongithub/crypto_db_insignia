@@ -16,15 +16,21 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // console.log(config[process.env.NODE_ENV]);
-if (process.env.NODE_ENV) {
+if (process.env.NODE_ENV && config[process.env.NODE_ENV]) {
   sequelize = new Sequelize(config[process.env.NODE_ENV]);
 } else {
-  sequelize = new Sequelize(
-    config[process.env.DB_DATABASE],
-    config[process.env.DB_USERNAME],
-    config[process.env.DB_PASSWORD],
-    config
-  );
+  const dbName = process.env.DB_DATABASE;
+  const dbUser = process.env.DB_USERNAME;
+  const dbPassword = process.env.DB_PASSWORD;
+  const dbConfig = config;
+
+  if (!dbName || !dbUser || !dbPassword) {
+    throw new Error(
+      "Database configuration is missing in environment variables"
+    );
+  }
+
+  sequelize = new Sequelize(dbName, dbUser, dbPassword, dbConfig);
 }
 
 // Middleware
