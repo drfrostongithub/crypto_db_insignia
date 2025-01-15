@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../server");
+const app = require("../index");
 const { User, Wallet } = require("../models");
 const { sequelize } = require("../models");
 const jwt = require("../helper/jwt");
@@ -17,7 +17,7 @@ describe("UserController", () => {
     jest.clearAllMocks();
   });
 
-  describe("POST /users/register", () => {
+  describe("POST /register", () => {
     let mockTransaction;
 
     beforeEach(() => {
@@ -41,7 +41,7 @@ describe("UserController", () => {
       Wallet.create.mockResolvedValue(mockWallet);
 
       const response = await request(app)
-        .post("/users/register")
+        .post("/register")
         .send({ username: "testuser", password: "testpassword" });
 
       expect(response.status).toBe(201);
@@ -62,7 +62,7 @@ describe("UserController", () => {
 
     it("should return an error if username or password is missing", async () => {
       const response = await request(app)
-        .post("/users/register")
+        .post("/register")
         .send({ username: "" });
 
       expect(response.status).toBe(400);
@@ -76,7 +76,7 @@ describe("UserController", () => {
       User.create.mockRejectedValue(new Error("Database error"));
 
       const response = await request(app)
-        .post("/users/register")
+        .post("/register")
         .send({ username: "testuser", password: "testpassword" });
 
       expect(response.status).toBe(500);
@@ -84,7 +84,7 @@ describe("UserController", () => {
     });
   });
 
-  describe("POST /users/login", () => {
+  describe("POST /login", () => {
     it("should login successfully and return a token", async () => {
       const mockUser = {
         id: 1,
@@ -97,7 +97,7 @@ describe("UserController", () => {
       jwt.generateToken.mockReturnValue(mockToken);
 
       const response = await request(app)
-        .post("/users/login")
+        .post("/login")
         .send({ username: "testuser", password: "testpassword" });
 
       expect(response.status).toBe(200);
@@ -110,9 +110,7 @@ describe("UserController", () => {
     });
 
     it("should return an error if username or password is missing", async () => {
-      const response = await request(app)
-        .post("/users/login")
-        .send({ username: "" });
+      const response = await request(app).post("/login").send({ username: "" });
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty(
@@ -131,7 +129,7 @@ describe("UserController", () => {
       User.findOne.mockResolvedValue(mockUser);
 
       const response = await request(app)
-        .post("/users/login")
+        .post("/login")
         .send({ username: "testuser", password: "wrongpassword" });
 
       expect(response.status).toBe(401);

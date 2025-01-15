@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../server");
+const app = require("../index");
 const { Wallet, User, Transaction, sequelize } = require("../models");
 const { generateToken } = require("../helper/jwt"); // Ensure this path is correct
 
@@ -26,85 +26,89 @@ const mockTransactionRecord = {
   amount: 50,
 };
 
-let token; // Declare a variable to store the token
-
 // Middleware mock
-const mockDecodedUser = { id: 1, username: "testuser" };
+// const mockDecodedUser = { id: 1, username: "testuser" };
 
-// Add a global middleware mock for decodedUser
-app.use((req, res, next) => {
-  req.decodedUser = mockDecodedUser;
-  next();
-});
+// // Add a global middleware mock for decodedUser
+// app.use((req, res, next) => {
+//   req.decodedUser = mockDecodedUser;
+//   next();
+// });
 
-beforeAll(() => {
-  // Generate a token before all tests
-  token = generateToken({ id: mockUser.id, username: mockUser.username });
+describe("Wallet Routes", () => {
+  let token;
 
-  // Mock user validation for login
-  User.findOne.mockImplementation(({ where: { username } }) => {
-    if (username === "testuser") {
-      return {
-        ...mockUser,
-        validatePassword: jest.fn().mockResolvedValue(true), // Correct password
-      };
-    }
-    return null; // No user found
+  beforeAll(() => {
+    // Generate a token before all tests
+    token = generateToken({ id: mockUser.id, username: mockUser.username });
+
+    // // Mock user validation for login
+    // User.findOne.mockImplementation(({ where: { username } }) => {
+    //   if (username === "testuser") {
+    //     return {
+    //       ...mockUser,
+    //       validatePassword: jest.fn().mockResolvedValue(true), // Correct password
+    //     };
+    //   }
+    //   return null; // No user found
+    // });
   });
-});
 
-describe("Wallet Controller", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  //   describe("createWallet", () => {
-  //     it("should create a new wallet for the user", async () => {
-  //       Wallet.findOne.mockResolvedValue(null); // No existing wallet
-  //       Wallet.create.mockResolvedValue(mockWallet);
+  describe("POST /wallets/transfer", () => {
+    it("should transfer funds from one wallet to another", async () => {
+      Wallet.findOne.mockResolvedValueOnce(mockWallet);
+      Wallet.findOne.mockResolvedValueOnce(mockRecipientWallet);
+      Transaction.create.mockResolvedValueOnce(mockTransactionRecord);
+      User.findByPk.mockResolvedValue(mockUser);
 
-  //       const response = await request(app)
-  //         .post("/wallets")
-  //         .set("access_token", `${token}`)
-  //         .send();
+      const response = await request(app)
+        .post("/wallets/transfer")
+        .set("access_token", `${token}`)
+        .send({
+          recipientId: mockRecipientUser.id,
+          amount: 50,
+        });
 
-  //       //   console.log(response.body, response.status);
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("message", "Transfer successful");
+      expect(Wallet.findOne).toHaveBeenCalledTimes(2);
+      expect(Transaction.create).toHaveBeenCalledTimes(1);
+      expect(mockWallet.save).toHaveBeenCalledTimes(1);
+      expect(mockRecipientWallet.save).toHaveBeenCalledTimes(1);
+    });
 
-  //       expect(response.status).toBe(201);
-  //       expect(response.body).toHaveProperty(
-  //         "message",
-  //         "Wallet created successfully"
-  //       );
-  //       expect(Wallet.create).toHaveBeenCalledWith({
-  //         userId: mockDecodedUser.id,
-  //         amount: 0,
-  //       });
-  //     });
+    it("should return an error if the sender does not have enough funds", async () => {
+      Wallet.findOne.mockResolvedValueOnce({ ...mockWallet, amount: 10 });
+      User.findByPk.mockResolvedValue(mockUser);
 
-  //     it("should return 400 if wallet already exists", async () => {
-  //       Wallet.findOne.mockResolvedValue(mockWallet); // Wallet already exists
+      const response = await request(app)
+        .post("/wallets/transfer")
+        .set("access_token", `${token}`)
+        .send({
+          recipientId: mockRecipientUser.id,
+          amount: 50,
+        });
+      console.log(response.body, response.status);
 
-  //       const response = await request(app)
-  //         .post("/wallets")
-  //         .set("access_token", `${token}`)
-  //         .send();
-
-  //       expect(response.status).toBe(400);
-  //       expect(response.body).toHaveProperty(
-  //         "message",
-  //         "Wallet already exists for this user"
-  //       );
-  //     });
-  //   });
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty("error", "Invalid transfer details");
+      expect(Wallet.findOne).toHaveBeenCalledTimes(1);
+      expect(Transaction.create).not.toHaveBeenCalled();
+    });
+  });
 
   describe("getBalance", () => {
     it("should return the wallet balance", async () => {
       Wallet.findOne.mockResolvedValue(mockWallet);
+      User.findByPk.mockResolvedValue(mockUser);
       const response = await request(app)
         .get("/wallets/balance")
         .set("access_token", `${token}`)
         .send();
-      console.log(response.body, response.status, token);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("balance", mockWallet.amount);
@@ -113,7 +117,10 @@ describe("Wallet Controller", () => {
     it("should return 404 if wallet not found", async () => {
       Wallet.findOne.mockResolvedValue(null);
 
-      const response = await request(app).get("/wallets/balance").send();
+      const response = await request(app)
+        .set("access_token", `${token}`)
+        .get("/wallets/balance")
+        .send();
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Wallet not found");
