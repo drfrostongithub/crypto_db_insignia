@@ -132,31 +132,30 @@ module.exports = {
     }
   },
 
-  async listTopUsers(req, res, next) {
+  async listTopSpenders(req, res, next) {
     try {
-      const { id: userId } = req.decodedUser;
-      const topUsers = await Transaction.findAll({
+      const topSpenders = await Transaction.findAll({
         where: {
-          senderId: userId, // Only consider outbound transfers
+          senderId: { [Op.ne]: null }, // Only consider outbound transfers
         },
         attributes: [
-          "recipientId", // Group by recipient
-          [sequelize.fn("SUM", sequelize.col("amount")), "totalTransferValue"], // Sum of transfer values
+          "senderId", // Group by senderId
+          [sequelize.fn("SUM", sequelize.col("amount")), "totalOutboundValue"], // Sum of all transfer amounts
         ],
-        group: ["recipientId"], // Group by recipientId to aggregate values
-        order: [[sequelize.literal("totalTransferValue"), "DESC"]], // Order by totalTransferValue
-        limit: 10, // Limit to top 10 users
+        group: ["senderId", "Sender.id", "Sender.username"],
+        order: [[sequelize.literal(`"totalOutboundValue"`), "DESC"]], // Order by totalOutboundValue
+        limit: 10, // Top 10 users
         include: [
           {
             model: User,
-            as: "Recipient",
-            attributes: ["id", "username"], // Include recipient details
+            as: "Sender", // Include user details for sender
+            attributes: ["id", "username"],
           },
         ],
       });
-      console.log(topUsers);
 
-      res.status(200).json({ topUsers });
+      // Send the top spenders as response
+      res.status(200).json({ topSpenders });
     } catch (err) {
       next(err);
     }

@@ -13,6 +13,6 @@ router.get(
   "/transactions/user/top",
   walletController.listTopTransactionsByUser
 );
-router.get("/transactions/top", walletController.listTopUsers);
+router.get("/transactions/top", walletController.listTopSpenders);
 
 module.exports = router;
