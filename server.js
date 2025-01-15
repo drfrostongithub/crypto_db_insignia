@@ -22,6 +22,7 @@ const PORT = process.env.PORT || 3000;
 //     config
 //   );
 // }
+// console.log(config[process.env.NODE_ENV]);
 
 // Middleware
 app.use(cors());

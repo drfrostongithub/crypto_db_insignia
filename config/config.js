@@ -17,13 +17,23 @@ module.exports = {
     dialect: "postgres",
     // url: process.env.TEST_DATABASE_URL,
   },
+  // production: {
+  //   username: process.env.DB_USERNAME,
+  //   password: process.env.DB_PASSWORD,
+  //   database: process.env.DB_DATABASE,
+  //   host: process.env.DB_HOST,
+  //   dialect: "postgres",
+  //   // url: process.env.PRODUCTION_DATABASE_URL,
+  //   // use_env_variable: "JAWSDB_URL",
+  // },
   production: {
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    host: process.env.DB_HOST,
+    use_env_variable: "DATABASE_URL",
     dialect: "postgres",
-    // url: process.env.PRODUCTION_DATABASE_URL,
-    // use_env_variable: "JAWSDB_URL",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, // Necessary for some cloud providers
+      },
+    },
   },
 };
