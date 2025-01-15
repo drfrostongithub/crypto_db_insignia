@@ -1,18 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const walletController = require("../controllers/walletController");
+const WalletController = require("../controllers/walletController");
 
 // Apply authentication to wallet routes
 
 // Wallet operations
 // router.post("/create", walletController.createWallet);
-router.get("/balance", walletController.getBalance);
-router.post("/deposit", walletController.deposit);
-router.post("/transfer", walletController.transfer);
+router.get("/balance", WalletController.getBalance);
+router.post("/deposit", WalletController.deposit);
+router.post("/transfer", WalletController.transfer);
 router.get(
   "/transactions/user/top",
-  walletController.listTopTransactionsByUser
+  WalletController.listTopTransactionsByUser
 );
-router.get("/transactions/top", walletController.listTopSpenders);
+router.get("/transactions/top", WalletController.listTopSpenders);
 
 module.exports = router;
