@@ -9,7 +9,7 @@ router.get(`/`, Controller.home);
 
 // Public routes
 router.post("/register", UserController.register);
-router.post("/login", UserController.login);
+router.post("/", UserController.login);
 
 // Protected routes
 router.use(authentication);
