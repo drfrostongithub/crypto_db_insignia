@@ -1,8 +1,8 @@
 const { Wallet, User, Transaction, sequelize } = require("../models");
 const { Op, Sequelize } = require("sequelize");
 
-module.exports = {
-  async createWallet(req, res, next) {
+class WalletController {
+  static async createWallet(req, res, next) {
     try {
       console.log(req, "jalan");
       const { id: userId } = req.decodedUser;
@@ -22,9 +22,9 @@ module.exports = {
     } catch (err) {
       next(err);
     }
-  },
+  }
 
-  async getBalance(req, res, next) {
+  static async getBalance(req, res, next) {
     try {
       const { id: userId } = req.decodedUser;
 
@@ -37,9 +37,9 @@ module.exports = {
     } catch (err) {
       next(err);
     }
-  },
+  }
 
-  async deposit(req, res, next) {
+  static async deposit(req, res, next) {
     try {
       const { id: userId } = req.decodedUser;
       const { amount } = req.body;
@@ -62,9 +62,9 @@ module.exports = {
     } catch (err) {
       next(err);
     }
-  },
+  }
 
-  async transfer(req, res, next) {
+  static async transfer(req, res, next) {
     const sequelizeTransaction = await sequelize.transaction();
     try {
       const { id: userId } = req.decodedUser;
@@ -130,9 +130,9 @@ module.exports = {
       await sequelizeTransaction.rollback();
       next(err);
     }
-  },
+  }
 
-  async listTopSpenders(req, res, next) {
+  static async listTopSpenders(req, res, next) {
     try {
       const topSpenders = await Transaction.findAll({
         where: {
@@ -159,9 +159,9 @@ module.exports = {
     } catch (err) {
       next(err);
     }
-  },
+  }
 
-  async listTopTransactionsByUser(req, res, next) {
+  static async listTopTransactionsByUser(req, res, next) {
     try {
       const { id: userId } = req.decodedUser;
       const { page = 1, limit = 10 } = req.query;
@@ -218,5 +218,7 @@ module.exports = {
     } catch (err) {
       next(err);
     }
-  },
-};
+  }
+}
+
+module.exports = WalletController;
