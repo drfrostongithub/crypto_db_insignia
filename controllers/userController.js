@@ -45,10 +45,9 @@ class UserController {
 
       // Commit the transaction
       await transaction.commit();
-
       res.status(201).json({
         message: "User registered successfully",
-        username: user.username,
+        username: username,
       });
     } catch (err) {
       await transaction.rollback();

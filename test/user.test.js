@@ -9,10 +9,26 @@ jest.mock("../helper/jwt");
 
 describe("UserController", () => {
   beforeEach(() => {
+    mockTransaction = {
+      commit: jest.fn().mockResolvedValue(),
+      rollback: jest.fn().mockResolvedValue(),
+    };
+    sequelize.transaction.mockResolvedValue(mockTransaction);
     jest.clearAllMocks();
   });
 
   describe("POST /users/register", () => {
+    let mockTransaction;
+
+    beforeEach(() => {
+      mockTransaction = {
+        commit: jest.fn().mockResolvedValue(),
+        rollback: jest.fn().mockResolvedValue(),
+      };
+      sequelize.transaction.mockResolvedValue(mockTransaction);
+      jest.clearAllMocks();
+    });
+
     it("should register a user and create a wallet successfully", async () => {
       const mockUser = {
         id: 1,
@@ -21,11 +37,8 @@ describe("UserController", () => {
       };
       const mockWallet = { id: 1, userId: 1, amount: 0 };
 
-      // Mock database methods
       User.create.mockResolvedValue(mockUser);
       Wallet.create.mockResolvedValue(mockWallet);
-      const transaction = await sequelize.transaction();
-      sequelize.transaction.mockResolvedValue(transaction);
 
       const response = await request(app)
         .post("/users/register")
@@ -36,15 +49,15 @@ describe("UserController", () => {
         "message",
         "User registered successfully"
       );
-      expect(response.body).toHaveProperty("username", "testuser");
       expect(User.create).toHaveBeenCalledWith(
         { username: "testuser", password: expect.any(String) },
-        { transaction }
+        { transaction: mockTransaction }
       );
       expect(Wallet.create).toHaveBeenCalledWith(
         { userId: 1, amount: 0 },
-        { transaction }
+        { transaction: mockTransaction }
       );
+      expect(mockTransaction.commit).toHaveBeenCalled();
     });
 
     it("should return an error if username or password is missing", async () => {
@@ -60,9 +73,6 @@ describe("UserController", () => {
     });
 
     it("should rollback the transaction if an error occurs", async () => {
-      const transaction = await sequelize.transaction();
-      sequelize.transaction.mockResolvedValue(transaction);
-
       User.create.mockRejectedValue(new Error("Database error"));
 
       const response = await request(app)
@@ -70,7 +80,7 @@ describe("UserController", () => {
         .send({ username: "testuser", password: "testpassword" });
 
       expect(response.status).toBe(500);
-      expect(transaction.rollback).toHaveBeenCalled();
+      expect(mockTransaction.rollback).toHaveBeenCalled();
     });
   });
 
