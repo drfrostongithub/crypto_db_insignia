@@ -8,8 +8,8 @@ const walletRoutes = require("./walletRoutes");
 router.get(`/`, Controller.home);
 
 // Public routes
-router.post("/users/register", UserController.register);
-router.post("/users/login", UserController.login);
+router.post("/register", UserController.register);
+router.post("/login", UserController.login);
 
 // Protected routes
 router.use(authentication);
