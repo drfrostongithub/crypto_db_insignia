@@ -38,9 +38,9 @@ app.use(routes);
 // Error Handler
 app.use(errorHandler);
 
-app.get("/", (req, res) => {
-  res.send("Crypto Wallet Backend is running!");
-});
+// app.get("/", (req, res) => {
+//   res.send("Crypto Wallet Backend is running!");
+// });
 
 // Start the server only in production or non-test environments
 if (process.env.NODE_ENV !== "test") {
