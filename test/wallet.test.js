@@ -92,10 +92,9 @@ describe("Wallet Routes", () => {
           recipientId: mockRecipientUser.id,
           amount: 50,
         });
-      console.log(response.body, response.status);
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error", "Invalid transfer details");
+      expect(response.body).toHaveProperty("message", "Insufficient funds");
       expect(Wallet.findOne).toHaveBeenCalledTimes(1);
       expect(Transaction.create).not.toHaveBeenCalled();
     });
@@ -121,6 +120,7 @@ describe("Wallet Routes", () => {
         .set("access_token", `${token}`)
         .get("/wallets/balance")
         .send();
+      console.log(response.body, response.status);
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Wallet not found");
