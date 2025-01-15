@@ -1,7 +1,10 @@
-if (process.env.NODE_ENV !== "production") {
-  require(`dotenv`).config();
-  // config();
-}
+// if (process.env.NODE_ENV !== "production") {
+//   require(`dotenv`).config();
+//   // config();
+// }
+
+require(`dotenv`).config();
+
 const express = require("express");
 const cors = require("cors");
 const errorHandler = require("./middlewares/errorHandler");
@@ -12,17 +15,17 @@ const Sequelize = require("sequelize");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// if (process.env.NODE_ENV) {
-//   sequelize = new Sequelize(config[process.env.NODE_ENV]);
-// } else {
-//   sequelize = new Sequelize(
-//     config.process.env.DB_DATABASE,
-//     config.process.env.DB_USERNAME,
-//     config.process.env.DB_PASSWORD,
-//     config
-//   );
-// }
 // console.log(config[process.env.NODE_ENV]);
+if (process.env.NODE_ENV) {
+  sequelize = new Sequelize(config[process.env.NODE_ENV]);
+} else {
+  sequelize = new Sequelize(
+    config[process.env.DB_DATABASE],
+    config[process.env.DB_USERNAME],
+    config[process.env.DB_PASSWORD],
+    config
+  );
+}
 
 // Middleware
 app.use(cors());
