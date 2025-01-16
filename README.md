@@ -204,12 +204,30 @@ By default, the server will run on `http://localhost:3000`.
 
 ### Transactions
 
-#### GET `/wallet/transactions/top/:n`
-- **Description**: Retrieve the top `n` transactions for a user.
+#### GET `/wallet/transactions/top`
+- **Description**: Retrieve the top spender along with it's amount.
 - **Headers**:
   ```json
   {
-    "Authorization": "Bearer <token>"
+    "access_token": "<token>"
+  }
+  ```
+- **Response**:
+  ```json
+  [
+    {
+      "senderName": "string",
+      "amount": 100,
+    }
+  ]
+  ```
+
+  #### GET `/wallet/transactions/user/top`
+- **Description**: Retrieve the top transactions for a user.
+- **Headers**:
+  ```json
+  {
+    "access_token": "<token>"
   }
   ```
 - **Response**:
