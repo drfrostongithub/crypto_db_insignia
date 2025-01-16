@@ -28,13 +28,7 @@ function errorHandler(err, req, res, next) {
   }
 
   // Business Logic Errors
-  else if (err.name === "ProductValidationError") {
-    status = 400;
-    message = err.message || "Invalid product details";
-  } else if (err.name === "InsufficientStock") {
-    status = 400;
-    message = err.message || "Insufficient stock available";
-  } else {
+  else {
     status = 500;
     message = err.message || "Internal server error";
   }
