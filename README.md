@@ -70,6 +70,14 @@ JWT_SECRET=<your_jwt_secret_key>
 
 ### 4. Database Setup
 
+## Important
+
+Before proceeding with the Sequelize setup, ensure that you have **pgAdmin** and **PostgreSQL** installed and running on your machine. You can download and install them from the following links:
+
+- [pgAdmin](https://www.pgadmin.org/download/)
+- [PostgreSQL](https://www.postgresql.org/download/)
+
+
 #### a. Create the Database
 Run the following command to create the database (ensure PostgreSQL is running):
 
