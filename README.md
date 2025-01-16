@@ -96,7 +96,7 @@ npx sequelize-cli db:seed:all
 Start the application:
 
 ```bash
-npm start
+npm run dev
 ```
 
 By default, the server will run on `http://localhost:3000`.
