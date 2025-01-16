@@ -107,7 +107,7 @@ By default, the server will run on `http://localhost:3000`.
 
 ### Authentication
 
-#### POST `/users/register`
+#### POST `/register`
 - **Description**: Register a new user and create a wallet.
 - **Request Body**:
   ```json
@@ -124,7 +124,7 @@ By default, the server will run on `http://localhost:3000`.
   }
   ```
 
-#### POST `/users/login`
+#### POST `/login`
 - **Description**: Log in an existing user.
 - **Request Body**:
   ```json
