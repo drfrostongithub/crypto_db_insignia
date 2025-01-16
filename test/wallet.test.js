@@ -27,13 +27,13 @@ const mockTransactionRecord = {
 };
 
 // Middleware mock
-// const mockDecodedUser = { id: 1, username: "testuser" };
+const mockDecodedUser = { id: 1, username: "testuser" };
 
-// // Add a global middleware mock for decodedUser
-// app.use((req, res, next) => {
-//   req.decodedUser = mockDecodedUser;
-//   next();
-// });
+// Add a global middleware mock for decodedUser
+app.use((req, res, next) => {
+  req.decodedUser = mockDecodedUser;
+  next();
+});
 
 describe("Wallet Routes", () => {
   let token;
@@ -42,16 +42,16 @@ describe("Wallet Routes", () => {
     // Generate a token before all tests
     token = generateToken({ id: mockUser.id, username: mockUser.username });
 
-    // // Mock user validation for login
-    // User.findOne.mockImplementation(({ where: { username } }) => {
-    //   if (username === "testuser") {
-    //     return {
-    //       ...mockUser,
-    //       validatePassword: jest.fn().mockResolvedValue(true), // Correct password
-    //     };
-    //   }
-    //   return null; // No user found
-    // });
+    // Mock user validation for login
+    User.findOne.mockImplementation(({ where: { username } }) => {
+      if (username === "testuser") {
+        return {
+          ...mockUser,
+          validatePassword: jest.fn().mockResolvedValue(true), // Correct password
+        };
+      }
+      return null; // No user found
+    });
   });
 
   afterEach(() => {
@@ -69,9 +69,11 @@ describe("Wallet Routes", () => {
         .post("/wallets/transfer")
         .set("access_token", `${token}`)
         .send({
-          recipientId: mockRecipientUser.id,
+          to_username: mockRecipientUser.username,
           amount: 50,
         });
+
+      console.log(response.body, response.status, "TRANSFER");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("message", "Transfer successful");
@@ -89,7 +91,7 @@ describe("Wallet Routes", () => {
         .post("/wallets/transfer")
         .set("access_token", `${token}`)
         .send({
-          recipientId: mockRecipientUser.id,
+          to_username: mockRecipientUser.username,
           amount: 50,
         });
 
@@ -109,6 +111,7 @@ describe("Wallet Routes", () => {
         .set("access_token", `${token}`)
         .send();
 
+      console.log(response.body, response.status, "BALANCE");
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("balance", mockWallet.amount);
     });
@@ -120,7 +123,7 @@ describe("Wallet Routes", () => {
         .set("access_token", `${token}`)
         .get("/wallets/balance")
         .send();
-      console.log(response.body, response.status);
+      console.log(response.body, response.status, "NOT FOUND");
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Wallet not found");
@@ -133,6 +136,7 @@ describe("Wallet Routes", () => {
 
       const response = await request(app)
         .post("/wallets/deposit")
+        .set("access_token", `${token}`)
         .send({ amount: 50 });
 
       expect(response.status).toBe(200);
@@ -146,10 +150,11 @@ describe("Wallet Routes", () => {
     it("should return 400 for invalid deposit amount", async () => {
       const response = await request(app)
         .post("/wallets/deposit")
+        .set("access_token", `${token}`)
         .send({ amount: -50 });
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("message", "Invalid deposit amount");
+      expect(response.body).toHaveProperty("error", "Invalid deposit amount");
     });
   });
 
@@ -166,7 +171,9 @@ describe("Wallet Routes", () => {
 
       const response = await request(app)
         .post("/wallets/transfer")
+        .set("access_token", `${token}`)
         .send({ to_username: "recipientuser", amount: 50 });
+      console.log(response.body, response.status, "Between WALLET", mockWallet);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("message", "Transfer successful");
@@ -178,13 +185,11 @@ describe("Wallet Routes", () => {
     it("should return 400 if transfer amount is invalid", async () => {
       const response = await request(app)
         .post("/wallets/transfer")
+        .set("access_token", `${token}`)
         .send({ to_username: "recipientuser", amount: -50 });
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty(
-        "message",
-        "Invalid transfer details"
-      );
+      expect(response.body).toHaveProperty("error", "Invalid transfer details");
     });
 
     it("should return 400 if insufficient balance", async () => {
@@ -194,10 +199,10 @@ describe("Wallet Routes", () => {
 
       const response = await request(app)
         .post("/wallets/transfer")
+        .set("access_token", `${token}`)
         .send({ to_username: "recipientuser", amount: 500 });
-
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("message", "Insufficient balance");
+      expect(response.body).toHaveProperty("error", "Insufficient balance");
     });
   });
 });
