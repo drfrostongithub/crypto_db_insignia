@@ -12,7 +12,6 @@ router.post("/register", UserController.register);
 router.post("/login", UserController.login);
 
 // Protected routes
-// router.use(authentication);
 router.use("/wallets", authentication, walletRoutes);
 
 module.exports = router;
