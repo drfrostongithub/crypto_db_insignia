@@ -6,6 +6,7 @@ const Controller = require(`../controllers/controller`);
 const walletRoutes = require("./walletRoutes");
 
 router.get(`/`, Controller.home);
+router.get(`/check`, Controller.check);
 
 // Public routes
 router.post("/register", UserController.register);

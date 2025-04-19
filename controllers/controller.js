@@ -1,6 +1,10 @@
 class Controller {
   static home(req, res) {
-    res.status(200).json({ Home: `I guess you wonder where I went ?` });
+    res.status(200).json({ Home: `Check this out` });
+  }
+
+  static check(req, res) {
+    res.status(200).json({ Home: `Check v2 version` });
   }
 }
 
