@@ -11,6 +11,7 @@ const errorHandler = require("../middlewares/errorHandler");
 const routes = require("../routes");
 const config = require("../config/config");
 const Sequelize = require("sequelize");
+const pg = require("pg");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,7 +23,7 @@ if (process.env.NODE_ENV && config[process.env.NODE_ENV]) {
   const dbName = process.env.DB_DATABASE;
   const dbUser = process.env.DB_USERNAME;
   const dbPassword = process.env.DB_PASSWORD;
-  const dbConfig = { dialect: "postgres" };
+  const dbConfig = { dialect: "postgres", dialectModule: pg };
 
   if (!dbName || !dbUser || !dbPassword) {
     throw new Error(
