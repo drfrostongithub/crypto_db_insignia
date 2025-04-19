@@ -60,11 +60,11 @@ npm install
 Create a `.env` file in the project root and configure the following variables:
 
 ```env
-SUPABASE_USERNAME=<your_database_username>
-SUPABASE_PASSWORD=<your_database_password>
-SUPABASE_NAME=<your_database_name>
-SUPABASE_HOST=localhost
-SUPABASE_PORT=5432
+POSTGRES_USERNAME=<your_database_username>
+POSTGRES_PASSWORD=<your_database_password>
+POSTGRES_NAME=<your_database_name>
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
 JWT_SECRET=<your_jwt_secret_key>
 ```
 
