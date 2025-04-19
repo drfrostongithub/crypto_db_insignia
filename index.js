@@ -12,6 +12,7 @@ const routes = require("./routes");
 const config = require("./config/config");
 const Sequelize = require("sequelize");
 const pg = require("pg");
+// const postgresURL = process.env.POSTGRES_URL;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,18 +21,19 @@ const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV && config[process.env.NODE_ENV]) {
   sequelize = new Sequelize(config[process.env.NODE_ENV]);
 } else {
-  const dbName = process.env.POSTGRES_DATABASE;
-  const dbUser = process.env.POSTGRES_USERNAME;
-  const dbPassword = process.env.POSTGRES_PASSWORD;
+  // const dbName = process.env.POSTGRES_DATABASE;
+  // const dbUser = process.env.POSTGRES_USERNAME;
+  // const dbPassword = process.env.POSTGRES_PASSWORD;
+  const postgresURL = process.env.POSTGRES_URL || process.env.DATABASE_URL;
   const dbConfig = { dialect: "postgres", dialectModule: pg };
 
-  if (!dbName || !dbUser || !dbPassword) {
+  if (!postgresURL) {
     throw new Error(
       "Database configuration is missing in environment variables"
     );
   }
 
-  sequelize = new Sequelize(dbName, dbUser, dbPassword, dbConfig);
+  sequelize = new Sequelize(postgresURL, dbConfig);
 }
 
 // Middleware
