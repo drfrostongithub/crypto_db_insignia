@@ -1,11 +1,11 @@
 {
   "name": "crypto-be",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "api/index.js",
   "scripts": {
     "test": "jest --runInBand --verbose --detectOpenHandles --forceExit",
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js",
     "sequelize": "node -r dotenv/config node_modules/.bin/sequelize"
   },
   "keywords": [],
