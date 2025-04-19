@@ -23,7 +23,7 @@ module.exports = {
     database: process.env.POSTGRES_DATABASE,
     host: process.env.POSTGRES_HOST,
     dialect: "postgres",
-    url: process.env.PRODUCTION_DATABASE_URL,
+    url: process.env.POSTGRES_URL,
     // use_env_variable: "JAWSPOSTGRES_URL",
   },
   // production: {

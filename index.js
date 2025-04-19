@@ -36,6 +36,15 @@ if (process.env.NODE_ENV && config[process.env.NODE_ENV]) {
   sequelize = new Sequelize(postgresURL, dbConfig);
 }
 
+// const postgresURL = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+// const dbConfig = { dialect: "postgres", dialectModule: pg };
+
+// if (!postgresURL) {
+//   throw new Error("Database configuration is missing in environment variables");
+// }
+
+// let sequelize = new Sequelize(postgresURL, dbConfig);
+
 // Middleware
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
