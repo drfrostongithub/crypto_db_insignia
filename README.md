@@ -60,11 +60,11 @@ npm install
 Create a `.env` file in the project root and configure the following variables:
 
 ```env
-DB_USERNAME=<your_database_username>
-DB_PASSWORD=<your_database_password>
-DB_NAME=<your_database_name>
-DB_HOST=localhost
-DB_PORT=5432
+SUPABASE_USERNAME=<your_database_username>
+SUPABASE_PASSWORD=<your_database_password>
+SUPABASE_NAME=<your_database_name>
+SUPABASE_HOST=localhost
+SUPABASE_PORT=5432
 JWT_SECRET=<your_jwt_secret_key>
 ```
 

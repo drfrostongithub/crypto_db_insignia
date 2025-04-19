@@ -20,9 +20,9 @@ const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV && config[process.env.NODE_ENV]) {
   sequelize = new Sequelize(config[process.env.NODE_ENV]);
 } else {
-  const dbName = process.env.DB_DATABASE;
-  const dbUser = process.env.DB_USERNAME;
-  const dbPassword = process.env.DB_PASSWORD;
+  const dbName = process.env.SUPABASE_DATABASE;
+  const dbUser = process.env.SUPABASE_USERNAME;
+  const dbPassword = process.env.SUPABASE_PASSWORD;
   const dbConfig = { dialect: "postgres", dialectModule: pg };
 
   if (!dbName || !dbUser || !dbPassword) {

@@ -6,12 +6,12 @@ describe("Database Connection", () => {
 
   beforeAll(() => {
     sequelize = new Sequelize(
-      process.env.DB_DATABASE,
-      process.env.DB_USERNAME,
-      process.env.DB_PASSWORD,
+      process.env.SUPABASE_DATABASE,
+      process.env.SUPABASE_USERNAME,
+      process.env.SUPABASE_PASSWORD,
       {
-        host: process.env.DB_HOST,
-        dialect: process.env.DB_DIALECT,
+        host: process.env.SUPABASE_HOST,
+        dialect: process.env.SUPABASE_DIALECT,
         logging: false, // Disable logging during tests
       }
     );
