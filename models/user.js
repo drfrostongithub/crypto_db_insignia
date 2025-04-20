@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     async validatePassword(password) {
+      console.log("Validating password,", password);
+      if (!password) {
+        throw new Error("Password is required for validation");
+      }
       return bcryptjs.compare(password, this.password);
     }
   }
